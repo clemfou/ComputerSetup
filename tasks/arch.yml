@@ -6,5 +6,6 @@
         name:
           - git-delta
           - neovim
+          - python-pipx
           - virtualbox-host-modules-arch
   become: true

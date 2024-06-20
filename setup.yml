@@ -25,7 +25,6 @@
           - bat
           - curl
           - packer
-          - pipx
           - pre-commit
           - shellcheck
           - terraform

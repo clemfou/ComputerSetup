@@ -54,5 +54,6 @@
 
     - ansible.builtin.package:
         name:
+          - pipx
           - virtualbox-7.0
   become: true
