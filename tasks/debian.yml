@@ -1,0 +1,58 @@
+---
+
+- name: Install Debian specific packages
+  block:
+    # Install neovim
+    - ansible.builtin.get_url:
+        url:
+          "https://github.com/neovim/neovim-releases/releases/download/\
+            v{{ package_ver.neovim }}/nvim-linux64.deb"
+        dest: /tmp
+
+    # Install git-delta
+    - ansible.builtin.get_url:
+        url:
+          "https://github.com/dandavison/delta/releases/download/\
+          {{ package_ver.git_delta }}/git-delta_{{ package_ver.git_delta }}_amd64.deb"
+        dest: /tmp
+
+    - name: Install previously downloaded deb packages
+      ansible.builtin.package:
+        deb: "{{ item }}"
+      loop:
+        - nvim-linux64.deb
+        - "/tmp/git-delta_{{ package_ver.git_delta }}_amd64.deb"
+      when: not ansible_check_mode
+
+    - name: Install Oracle gpg key
+      ansible.builtin.apt_key:
+        id: B9F8D658297AF3EFC18D5CDFA2F683C52980AECF
+        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+        keyring: /etc/apt/trusted.gpg.d/oracle.gpg
+
+    - name: Install Oracle virtualbox packages repository
+      ansible.builtin.apt_repository:
+        filename: oracle.list
+        repo:
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/oracle.gpg]
+          https://download.virtualbox.org/virtualbox/debian bookworm main
+        update_cache: true
+
+    - name: Install Hashicorp gpg key
+      ansible.builtin.apt_key:
+        id: 798AEC654E5C15428C8E42EEAA16FCBCA621E701
+        url: https://apt.releases.hashicorp.com/gpg
+        keyring: /etc/apt/trusted.gpg.d/hashicorp.gpg
+
+    - name: Install Hashicorp packages repository
+      ansible.builtin.apt_repository:
+        filename: hashicorp.list
+        repo:
+          deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/hashicorp.gpg]
+          https://apt.releases.hashicorp.com bookworm main
+        update_cache: true
+
+    - ansible.builtin.package:
+        name:
+          - virtualbox-7.0
+  become: true

@@ -1,0 +1,117 @@
+---
+
+- name: Set up my computer
+  hosts: localhost
+  connection: local
+
+  vars:
+    package_ver:
+      neovim: 0.10.0
+      git_delta: 0.17.0
+
+  tasks:
+    - name: Include Debian related tasks
+      ansible.builtin.include_tasks: tasks/debian.yml
+      when: ansible_facts['distribution'] == "Debian"
+
+    - name: Include Archlinux related tasks
+      ansible.builtin.include_tasks: tasks/arch.yml
+      when: ansible_facts['distribution'] == "Archlinux"
+
+    - name: Install common packages
+      ansible.builtin.package:
+        name:
+          - atool
+          - bat
+          - curl
+          - packer
+          - pipx
+          - pre-commit
+          - shellcheck
+          - terraform
+          - tmux
+          - vagrant
+          - wget
+          - zathura
+          - zsh
+      become: true
+
+    - name: Create some directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - ~/.cache/nvim/undo
+        - ~/.config-backup
+        - ~/.local/git
+        - ~/.local/share/nvim/site/autoload
+
+    - ansible.builtin.stat:
+        path: ~/.cfg
+      register: dotfiles_repository
+
+    - name: Install my dotfiles
+      block:
+        - name: Clone my dotfiles repository
+          ansible.builtin.git:
+            repo: https://github.com/clemfou/Config.git
+            dest: ~/.cfg
+            bare: true
+
+        - name: Checkout the config
+          ansible.builtin.shell: |
+            git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout
+          ignore_errors: yes
+          args:
+            executable: /bin/bash
+          register: checkout_result
+
+        - name: Backup pre-existing dot files
+          block:
+            - ansible.builtin.shell: |
+                git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout --conflict=merge 2>&1 | \
+                awk 'NR>1' | \
+                while read f; do [ ! -e "$f" ] || mv "$f" ~/.config-backup; done
+              args:
+                executable: /bin/bash
+
+            - ansible.builtin.shell: |
+                git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout
+              args:
+                executable: /bin/bash
+          when: checkout_result.failed
+
+        - name: Set Git to not show untracked files
+          ansible.builtin.shell: |
+            git --git-dir="$HOME"/.cfg --work-tree="$HOME" config status.showUntrackedFiles no
+          args:
+            executable: /bin/bash
+
+      when: not dotfiles_repository.stat.exists
+
+    - name: Install vim-plug for neovim
+      ansible.builtin.get_url:
+        url:
+          https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        dest: ~/.local/share/nvim/site/autoload/plug.vim
+
+    - name: Install Poetry
+      ansible.builtin.pip:
+        name: poetry
+        virtualenv: ~/.virtualenvs/poetry
+
+    - name: Install git-subrepo
+      ansible.builtin.git:
+        repo: https://github.com/ingydotnet/git-subrepo.git
+        dest: ~/.local/git/git-subrepo
+
+    - name: Install cronjob to purge old undo files every hour
+      ansible.builtin.cron:
+        name: Purge undo files
+        minute: 0
+        hour: "*"
+        job: >-
+          find ~/.cache/nvim/undo
+          -type f
+          -mtime +7
+          -exec rm {} \;

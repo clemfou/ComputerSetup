@@ -1,0 +1,10 @@
+---
+
+- name: Install Arch specific packages
+  block:
+    - ansible.builtin.package:
+        name:
+          - git-delta
+          - neovim
+          - virtualbox-host-modules-arch
+  become: true
