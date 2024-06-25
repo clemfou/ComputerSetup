@@ -44,6 +44,7 @@
         - ~/.config-backup
         - ~/.local/git
         - ~/.local/share/nvim/site/autoload
+        - ~/.zsh/cache
 
     - ansible.builtin.stat:
         path: ~/.cfg
