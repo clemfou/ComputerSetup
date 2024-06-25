@@ -2,27 +2,40 @@
 
 - name: Install Debian specific packages
   block:
-    # Install neovim
-    - ansible.builtin.get_url:
-        url:
-          "https://github.com/neovim/neovim-releases/releases/download/\
-            v{{ package_ver.neovim }}/nvim-linux64.deb"
-        dest: /tmp
+    - name: Gather the package facts
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Install neovim
+      block:
+        - ansible.builtin.get_url:
+            url:
+              "https://github.com/neovim/neovim-releases/releases/download/\
+                v{{ package_ver.neovim }}/nvim-linux64.deb"
+            dest: /tmp
+
+        - name: Install neovim
+          ansible.builtin.package:
+            deb: nvim-linux64.deb
+          when: not ansible_check_mode
+
+      when: "'neovim' not in ansible_facts.packages"
 
     # Install git-delta
-    - ansible.builtin.get_url:
-        url:
-          "https://github.com/dandavison/delta/releases/download/\
-          {{ package_ver.git_delta }}/git-delta_{{ package_ver.git_delta }}_amd64.deb"
-        dest: /tmp
+    - name: Install git-delta
+      block:
+        - ansible.builtin.get_url:
+            url:
+              "https://github.com/dandavison/delta/releases/download/\
+              {{ package_ver.git_delta }}/git-delta_{{ package_ver.git_delta }}_amd64.deb"
+            dest: /tmp
 
-    - name: Install previously downloaded deb packages
-      ansible.builtin.package:
-        deb: "{{ item }}"
-      loop:
-        - nvim-linux64.deb
-        - "/tmp/git-delta_{{ package_ver.git_delta }}_amd64.deb"
-      when: not ansible_check_mode
+        - name: Install neovim
+          ansible.builtin.package:
+            deb:  "/tmp/git-delta_{{ package_ver.git_delta }}_amd63.deb"
+          when: not ansible_check_mode
+
+      when: "'git-delta' not in ansible_facts.packages"
 
     - name: Install Oracle gpg key
       ansible.builtin.apt_key:
