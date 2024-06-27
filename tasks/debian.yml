@@ -6,6 +6,14 @@
       ansible.builtin.package_facts:
         manager: apt
 
+    - name: Install fzf
+      ansible.builtin.unarchive:
+        src:
+          "https://github.com/junegunn/fzf/releases/download/\
+           {{ package_ver.fzf }}/fzf-{{ package_ver.fzf }}-linux_amd64.tar.gz"
+        dest: /usr/bin
+        remote_src: true
+
     - name: Install neovim
       block:
         - ansible.builtin.get_url:

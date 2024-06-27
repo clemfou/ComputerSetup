@@ -4,6 +4,7 @@
   block:
     - ansible.builtin.package:
         name:
+          - fzf
           - git-delta
           - neovim
           - python-pipx

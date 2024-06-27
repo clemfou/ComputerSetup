@@ -6,8 +6,9 @@
 
   vars:
     package_ver:
-      neovim: 0.10.0
+      fzf: 0.53.0
       git_delta: 0.17.0
+      neovim: 0.10.0
 
   tasks:
     - name: Include Debian related tasks
