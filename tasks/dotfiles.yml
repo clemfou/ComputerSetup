@@ -1,0 +1,44 @@
+---
+
+- ansible.builtin.stat:
+    path: ~/.cfg
+  register: dotfiles_repository
+
+- name: Install my dotfiles
+  block:
+    - name: Clone my dotfiles repository
+      ansible.builtin.git:
+        repo: https://github.com/clemfou/Config.git
+        dest: ~/.cfg
+        bare: true
+
+    - name: Checkout the config
+      ansible.builtin.shell: |
+        git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout
+      ignore_errors: yes
+      args:
+        executable: /bin/bash
+      register: checkout_result
+
+    - name: Backup pre-existing dot files
+      block:
+        - ansible.builtin.shell: |
+            git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout --conflict=merge 2>&1 | \
+            awk 'NR>1' | \
+            while read f; do [ ! -e "$f" ] || mv "$f" ~/.config-backup; done
+          args:
+            executable: /bin/bash
+
+        - ansible.builtin.shell: |
+            git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout
+          args:
+            executable: /bin/bash
+      when: checkout_result.failed
+
+    - name: Set Git to not show untracked files
+      ansible.builtin.shell: |
+        git --git-dir="$HOME"/.cfg --work-tree="$HOME" config status.showUntrackedFiles no
+      args:
+        executable: /bin/bash
+
+  when: not dotfiles_repository.stat.exists

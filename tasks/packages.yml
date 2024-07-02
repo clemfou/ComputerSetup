@@ -1,0 +1,26 @@
+---
+
+- name: Install Debian specific packages
+  ansible.builtin.include_tasks: packages/debian.yml
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Install Arch specific packages
+  ansible.builtin.include_tasks: packages/arch.yml
+  when: ansible_facts['distribution'] == "Archlinux"
+
+- name: Install common packages
+  ansible.builtin.package:
+    name:
+      - atool
+      - bat
+      - curl
+      - packer
+      - pre-commit
+      - shellcheck
+      - terraform
+      - tmux
+      - vagrant
+      - wget
+      - zathura
+      - zsh
+  become: true

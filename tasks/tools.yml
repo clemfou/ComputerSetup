@@ -1,0 +1,38 @@
+---
+
+- name: Install vim-plug for neovim
+  ansible.builtin.get_url:
+    url:
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: ~/.local/share/nvim/site/autoload/plug.vim
+
+- name: Install Poetry
+  ansible.builtin.pip:
+    name: poetry
+    virtualenv: ~/.virtualenvs/poetry
+
+- name: Install git-subrepo
+  ansible.builtin.git:
+    repo: https://github.com/ingydotnet/git-subrepo.git
+    dest: ~/.local/git/git-subrepo
+
+- name: Install pyenv
+  block:
+    - name: Clone repository
+      ansible.builtin.git:
+        repo: https://github.com/pyenv/pyenv.git
+        dest: ~/.pyenv
+        depth: 1
+        single_branch: true
+        version: master
+
+    - ansible.builtin.git:
+        repo: "https://github.com/pyenv/{{ item }}.git"
+        dest: "~/.pyenv/plugins/{{ item }}"
+        depth: 1
+        single_branch: true
+        version: master
+      loop:
+        - pyenv-doctor
+        - pyenv-update
+        - pyenv-virtualenv
