@@ -9,6 +9,8 @@
       fzf: 0.53.0
       git_delta: 0.17.0
       neovim: 0.10.0
+    fonts_ver:
+      space_mono: 3.2.1
 
   tasks:
     - name: Create some directories
@@ -31,20 +33,5 @@
     - name: Install my tools
       ansible.builtin.include_tasks: tasks/tools.yml
 
-    - name: Link batcat to bat
-      ansible.builtin.file:
-        src: /usr/bin/batcat
-        dest: ~/.local/bin/bat
-        state: link
-      when: ansible_facts['distribution'] == "Debian"
-
-    - name: Install cronjob to purge old undo files every hour
-      ansible.builtin.cron:
-        name: Purge undo files
-        minute: 0
-        hour: "*"
-        job: >-
-          find ~/.cache/nvim/undo
-          -type f
-          -mtime +7
-          -exec rm {} \;
+    - name: Misc tasks
+      ansible.builtin.include_tasks: tasks/misc.yml
