@@ -14,6 +14,8 @@
       - atool
       - bat
       - curl
+      - git-filter-repo
+      - git-lfs
       - packer
       - pre-commit
       - shellcheck
