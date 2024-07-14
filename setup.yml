@@ -20,6 +20,7 @@
       loop:
         - ~/.cache/nvim/undo
         - ~/.config-backup
+        - ~/.gdbinit.d/
         - ~/.local/git
         - ~/.local/share/nvim/site/autoload
         - ~/.zsh/cache

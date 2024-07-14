@@ -36,3 +36,9 @@
         - pyenv-doctor
         - pyenv-update
         - pyenv-virtualenv
+
+- name: Install gdb-dashboard
+  ansible.builtin.get_url:
+    url:
+      https://raw.githubusercontent.com/cyrus-and/gdb-dashboard/master/.gdbinit
+    dest: ~/.gdbinit
