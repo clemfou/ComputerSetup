@@ -17,6 +17,7 @@
       - gdb
       - git-filter-repo
       - git-lfs
+      - keepassxc
       - packer
       - pre-commit
       - shellcheck
@@ -24,6 +25,7 @@
       - tmux
       - vagrant
       - wget
+      - wl-clipboard
       - zathura
       - zsh
   become: true
