@@ -24,7 +24,7 @@
 
         - name: Install neovim
           ansible.builtin.package:
-            deb: nvim-linux64.deb
+            deb: /tmp/nvim-linux64.deb
           when: not ansible_check_mode
 
       when: "'neovim' not in ansible_facts.packages"
@@ -40,7 +40,7 @@
 
         - name: Install neovim
           ansible.builtin.package:
-            deb:  "/tmp/git-delta_{{ package_ver.git_delta }}_amd63.deb"
+            deb:  "/tmp/git-delta_{{ package_ver.git_delta }}_amd64.deb"
           when: not ansible_check_mode
 
       when: "'git-delta' not in ansible_facts.packages"
@@ -53,10 +53,10 @@
 
     - name: Install Oracle virtualbox packages repository
       ansible.builtin.apt_repository:
-        filename: oracle.list
+        filename: oracle
         repo:
           deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/oracle.gpg]
-          https://download.virtualbox.org/virtualbox/debian bookworm main
+          https://download.virtualbox.org/virtualbox/debian bookworm contrib
         update_cache: true
 
     - name: Install Hashicorp gpg key
@@ -67,7 +67,7 @@
 
     - name: Install Hashicorp packages repository
       ansible.builtin.apt_repository:
-        filename: hashicorp.list
+        filename: hashicorp
         repo:
           deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/hashicorp.gpg]
           https://apt.releases.hashicorp.com bookworm main
