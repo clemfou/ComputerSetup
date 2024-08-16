@@ -10,6 +10,7 @@
       git_delta: 0.17.0
       neovim: 0.10.0
     fonts_ver:
+      source_code_pro: 3.2.1
       space_mono: 3.2.1
 
   tasks:

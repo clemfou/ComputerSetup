@@ -1,11 +1,25 @@
 ---
 
-- name: Install my favorite font
+- name: Install my favorite fonts
   block:
-    - name: Ensure /usr/local/share/fonts/ttf/spacemono exists
+    - name: Ensure font directories exist
       ansible.builtin.file:
-        path: /usr/local/share/fonts/ttf/spacemono
+        path: "/usr/local/share/fonts/ttf/{{ item }}"
         state: directory
+      loop:
+        - spacemono
+        - sourcecodepro
+
+    - name: Download and unarchive SourceCodePro font
+      ansible.builtin.unarchive:
+        src:
+          "https://github.com/ryanoasis/nerd-fonts/releases/\
+          download/v{{ fonts_ver.source_code_pro }}/SourceCodePro.zip"
+        dest: /usr/local/share/fonts/ttf/sourcecodepro
+        exclude:
+          - "*.txt"
+          - "*.md"
+        remote_src: true
 
     - name: Download and unarchive SpaceMono font
       ansible.builtin.unarchive:
