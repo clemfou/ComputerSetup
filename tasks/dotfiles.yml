@@ -23,9 +23,9 @@
     - name: Backup pre-existing dot files
       block:
         - ansible.builtin.shell: |
-            git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout --conflict=merge 2>&1 | \
-            awk 'NR>1' | \
-            while read f; do [ ! -e "$f" ] || mv "$f" ~/.config-backup; done
+            git --git-dir="$HOME"/.cfg --work-tree="$HOME" checkout 2>&1 | \
+            egrep "\s+\." | awk {'print $1'} | \
+            xargs -I{} sh -c 'mkdir -p "$HOME/.config-backup/$(dirname {})" && mv "$HOME/{}" "$HOME/.config-backup/{}"'
           args:
             executable: /bin/bash
 
