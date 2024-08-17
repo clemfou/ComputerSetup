@@ -24,6 +24,7 @@
         - ~/.gdbinit.d/
         - ~/.local/git
         - ~/.local/share/nvim/site/autoload
+        - ~/.scripts
         - ~/.zsh/cache
 
     - name: Install packages

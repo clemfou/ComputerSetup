@@ -41,14 +41,3 @@
     dest: ~/.local/bin/bat
     state: link
   when: ansible_facts['distribution'] == "Debian"
-
-- name: Install cronjob to purge old undo files every hour
-  ansible.builtin.cron:
-    name: Purge undo files
-    minute: 0
-    hour: "*"
-    job: >-
-      find ~/.cache/nvim/undo
-      -type f
-      -mtime +7
-      -exec rm {} \;
