@@ -20,6 +20,7 @@
           - "*.txt"
           - "*.md"
         remote_src: true
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: Download and unarchive SpaceMono font
       ansible.builtin.unarchive:
@@ -31,6 +32,7 @@
           - "*.txt"
           - "*.md"
         remote_src: true
+      ignore_errors: "{{ ansible_check_mode }}"
   become: true
 
 - name: Link batcat to bat
