@@ -21,6 +21,7 @@
       - packer
       - pre-commit
       - shellcheck
+      - sshpass
       - terraform
       - tmux
       - vagrant
