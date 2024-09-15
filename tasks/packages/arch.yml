@@ -4,8 +4,10 @@
   block:
     - ansible.builtin.package:
         name:
+          - freerdp2
           - fzf
           - git-delta
+          - libvncserver
           - neovim
           - python-pipx
           - virtualbox-host-modules-arch
